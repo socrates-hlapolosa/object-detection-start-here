@@ -1,4 +1,9 @@
 This project demonstrates object detection in both video and photo. To run locally;
+,,,
+just incase, the two directories below are links from;
+	https://github.com/rh-aiservices-bu/object-detection-rest
+	https://github.com/rh-aiservices-bu/object-detection-app
+,,,
 
 Presumptions
 - s2i installed on local
