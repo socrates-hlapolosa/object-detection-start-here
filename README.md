@@ -81,7 +81,7 @@ Assumptions;
 Steps;
 1. clear all currently running deployments
 2. install confluent
-3. update app.py
+3. update app.py (Only if the two are different, this might not be needed no more since converted repo to module)
 4. build image
 5. deploy application
 
