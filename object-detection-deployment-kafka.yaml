@@ -1,0 +1,170 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+ name: object-detection-kafka
+ namespace: confluent
+ labels:
+   app: object-detection-kafka
+spec:
+ replicas: 1
+ selector:
+   matchLabels:
+     app: object-detection-kafka-consumer
+ template:
+   metadata:
+     labels:
+       app: object-detection-kafka-consumer
+   spec:
+     containers:
+     - name: object-detection-kafka-consumer
+       image: socrates12345/object-detection-kafka-consumer:latest
+       imagePullPolicy: IfNotPresent
+       env:
+       - name: KAFKA_BOOTSTRAP_SERVER
+         value: kafka.confluent.svc.cluster.local:9092
+       - name: KAFKA_TOPIC_OBJECTS
+         value: objects
+       - name: KAFKA_TOPIC_IMAGES
+         value: images
+---
+apiVersion: v1
+kind: Service
+metadata:
+ name: object-detection-kafka-consumer
+ namespace: confluent
+ labels:
+   app: object-detection-kafka-consumer
+spec:
+ type: ClusterIP
+ selector:
+   app: object-detection-kafka-consumer
+ ports:
+ - port: 8081
+   targetPort: 8081
+---
+apiVersion: platform.confluent.io/v1beta1
+kind: KafkaTopic
+metadata:
+  name: images
+  namespace: confluent
+spec:
+  replicas: 1
+  partitionCount: 1
+  configs:
+    cleanup.policy: "delete"
+---
+apiVersion: platform.confluent.io/v1beta1
+kind: KafkaTopic
+metadata:
+  name: objects
+  namespace: confluent
+spec:
+  replicas: 1
+  partitionCount: 1
+  configs:
+    cleanup.policy: "delete"
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: kafka-client-config
+  namespace: confluent
+type: Opaque
+data:
+  kafka.properties: Ym9vdHN0cmFwLnNlcnZlcnM9a2Fma2EuY29uZmx1ZW50LnN2Yy5jbHVzdGVyLmxvY2FsOjkwNzEKc2VjdXJpdHkucHJvdG9jb2w9UExBSU5URVhU
+---
+kind: Namespace
+apiVersion: v1
+metadata:
+  name: object-detection
+  labels:
+    name: object-detection
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: object-detection-frontend
+  namespace: object-detection
+  labels:
+    app: object-detection-frontend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: object-detection-app
+  template:
+    metadata:
+      labels:
+        app: object-detection-app
+    spec:
+      containers:
+        - name: object-detection-app
+          image: socrates12345/object-detection-app:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8080
+          env:
+            - name: OBJECT_DETECTION_URL
+              value: http://object-detection-rest:8081/predictions
+            - name: KAFKA_BOOTSTRAP_SERVER
+              value: kafka.confluent.svc.cluster.local:9092
+            - name: KAFKA_TOPIC_OBJECTS
+              value: objects
+            - name: KAFKA_TOPIC_IMAGES
+              value: images
+            - name: KAFKA_CONSUMER_GROUP
+              value: object-detection-consumer-group
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: object-detection-app
+  namespace: object-detection
+spec:
+  type: LoadBalancer
+  selector:
+    app: object-detection-app
+  ports:
+    - port: 8080
+      targetPort: 8080
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: object-detection-rest
+  namespace: object-detection
+  labels:
+    app: object-detection-rest
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: object-detection-rest
+  template:
+    metadata:
+      labels:
+        app: object-detection-rest
+    spec:
+      containers:
+        - name: object-detection-rest
+          image: socrates12345/object-detection-rest:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8081
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: object-detection-rest
+  namespace: object-detection
+  labels:
+    app: object-detection-rest
+spec:
+  type: ClusterIP
+  selector:
+    app: object-detection-rest
+  ports:
+    - port: 8081
+      targetPort: 8081
+
+---

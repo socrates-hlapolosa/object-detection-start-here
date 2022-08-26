@@ -1,0 +1,82 @@
+---
+kind: NamespaceapiVersion: v1metadata:  name: object-detection  labels:    name: object-detection
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+ name: object-detection-rest
+ namespace: object-detection
+ labels:
+   app: object-detection-rest
+spec:
+ replicas: 1
+ selector:
+   matchLabels:
+     app: object-detection-rest
+ template:
+   metadata:
+     labels:
+       app: object-detection-rest
+   spec:
+     containers:
+     - name: object-detection-rest
+       image: socrates12345/object-detection-rest:latest
+       imagePullPolicy: IfNotPresent
+       ports:
+       - containerPort: 8081
+---
+apiVersion: v1
+kind: Service
+metadata:
+ name: object-detection-rest
+ namespace: object-detection
+ labels:
+   app: object-detection-rest
+spec:
+ type: ClusterIP
+ selector:
+   app: object-detection-rest
+ ports:
+ - port: 8081
+   targetPort: 8081
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+ name: object-detection-frontend
+ namespace: object-detection
+ labels:
+   app: object-detection-frontend
+spec:
+ replicas: 1
+ selector:
+   matchLabels:
+     app: object-detection-app
+ template:
+   metadata:
+     labels:
+       app: object-detection-app
+   spec:
+     containers:
+     - name: object-detection-app
+       image: socrates12345/object-detection-app:latest
+       imagePullPolicy: IfNotPresent
+       ports:
+       - containerPort: 8080
+       env:
+       - name: OBJECT_DETECTION_URL
+         value: http://object-detection-rest:8081/predictions
+---
+apiVersion: v1
+kind: Service
+metadata:
+ name: object-detection-app
+ namespace: object-detection
+spec:
+ type: LoadBalancer
+ selector:
+   app: object-detection-app
+ ports:
+ - port: 8080
+   targetPort: 8080

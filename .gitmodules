@@ -1,0 +1,3 @@
+[submodule "object-detection-kafka-consumer"]
+	path = object-detection-kafka-consumer
+	url = https://github.com/rh-aiservices-bu/object-detection-kafka-consumer.git
