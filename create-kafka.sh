@@ -9,6 +9,7 @@ docker pull confluentinc/cp-ksqldb-server:7.2.0
 docker pull confluentinc/cp-enterprise-control-center:7.2.0
 docker pull confluentinc/cp-schema-registry:7.2.0
 docker pull confluentinc/cp-kafka-rest:7.2.0
+docker pull confluentinc/cp-kafka-mqtt:7.2.0
 
 if [ ! -f "/usr/local/bin/kubectl-confluent" ] 
 then

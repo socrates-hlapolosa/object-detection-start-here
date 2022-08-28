@@ -1,15 +1,21 @@
-This project demonstrates object detection in both video and photo. To run locally;
+This project demonstrates real time system and data ingestion from object detection (in both video and photo) and sensor data. 
 ```
 just incase, the two directories below are links from;
 > https://github.com/rh-aiservices-bu/object-detection-rest
 > https://github.com/rh-aiservices-bu/object-detection-app
 > https://github.com/rh-aiservices-bu/object-detection-kafka-consumer.git
 ```
+# Architecture
 
+
+![Real Time Sysetem](realtime-system-design.png)
 Presumptions
 - s2i installed on local
 - docker desktop running
 
+to run locally;
+
+## Rest and websocket model inference
 ```
 $ cd object-detection-rest
 $ s2i build . registry.access.redhat.com/ubi8/python-38 object-detection-rest:latest
@@ -151,3 +157,50 @@ to stop everything afterwards;
 ```
 $ kubectl delete -f ../object-detection-deployment-kafka.yaml
 ```
+
+## Running in cloud
+
+Assumptions;
+1. kubernetes cluster already setup on aws with 3 compute nodes each xt3 or larger
+2. helm locally installed
+3. confluent cli locally installed
+4. will run inside kubesphere so need to install that first
+5. will create single cluster, but can expand later
+
+### Steps
+```
+$ ./create-remote-kafka-kubesphere-cluster.sh {nameofakscluster}
+```
+
+NOTE!
+might need to run 
+```
+$ chmod +x create-remote-kafka-kubesphere-cluster.sh
+```
+then to check status of things run;
+
+```
+$ kubectl logs -n kubesphere-system $(kubectl get pod --kubeconfig /Users/socrates/.kube/{nameofakscluster} -n kubesphere-system -l 'app in (ks-install, ks-installer)' -o jsonpath='{.items[0].metadata.name}') -f --kubeconfig /Users/socrates/.kube/{nameofakscluster}
+$ kubectl get svc/ks-console -n kubesphere-system
+
+```
+once the cluster is up, run ## Kafka Realtime consumption above
+
+## MQTT integration
+
+### Assumptions
+1. conluent cluster is running meaning confluent namespace already exists, else create it
+2. kafka-mqtt is running inside the cluster and port 1883 is exposed
+
+### Steps
+
+install mosquito mqtt broker (ony need the publisher since using kafka mqtt proxy)
+```
+arch -arm64 brew install mosquitto
+```
+
+then run mosquito publisher
+```
+mosquitto_pub -h 0.0.0.0 -p 1883 -t car/engine/temperature -q 2 -m "190F"
+```
+log into the confluence console and go to topics, search for temperature and you should see the messages coming in
