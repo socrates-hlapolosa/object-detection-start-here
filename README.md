@@ -1,6 +1,6 @@
 This project demonstrates real time system and data ingestion from object detection (in both video and photo) and sensor data. 
 ```
-just incase, the two directories below are links from;
+just incase, the three directories below are links from;
 > https://github.com/rh-aiservices-bu/object-detection-rest
 > https://github.com/rh-aiservices-bu/object-detection-app
 > https://github.com/rh-aiservices-bu/object-detection-kafka-consumer.git
@@ -87,9 +87,8 @@ Assumptions;
 Steps;
 1. clear all currently running deployments
 2. install confluent
-3. update app.py (Only if the two are different, this might not be needed no more since converted repo to module)
-4. build image
-5. deploy application
+3. build image
+4. deploy application
 
 ### 1. Clear running deployments
 
@@ -114,14 +113,6 @@ for the front end to be able to connect with the cluster will also need
 ```
 $ kubectl port-forward controlcenter-0 9021:9021
 ```
-### 3. Update project
-Note! An issue was picked up that means you cant run the project as is from git
-since kafka python will not connect to the kubernetes server without you specifying the
-api_version property, hence the update
-
-```
-$ mv kafka-consumer-app.py object-detection-kafka-consumer
-```
 ##### Lessons: 
 1. for connections you only need the bootstrap_server, consumer_topic, producer_topic
 2. always need api_version
@@ -129,7 +120,7 @@ $ mv kafka-consumer-app.py object-detection-kafka-consumer
 4. the dns name of kafka is <service_name>.<namespace>.svc.cluster.local:9092
     so in this case kafka.confluent.svc.cluster.local:9092
 
-### 4. Build image
+### 3. Build image
 
 ```
 $ cd object-detection-kafka-consumer
@@ -145,7 +136,7 @@ $ s2i build . registry.access.redhat.com/ubi8/python-38 socrates12345/object-det
 5. go delete the any old images after running s2i above, old images just take space
 6. s2i looks at latest commit, so if you make changes and dont commit, it wont work, your changes wont appear
 
-### 5. Deploy application
+### 4. Deploy application
 
 ```
 $ kubectl apply -f ../object-detection-deployment-kafka.yaml
