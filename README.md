@@ -19,7 +19,7 @@ to run locally;
 ```
 $ cd object-detection-rest
 $ s2i build . registry.access.redhat.com/ubi8/python-38 socrates12345/object-detection-rest:latest
-$ docker run -p 8081:8081 --rm -it --name socrates12345/object-detection-rest socrates12345/object-detection-rest:latest
+$ docker run -p 8081:8081 --rm -it --name object-detection-rest socrates12345/object-detection-rest:latest
 $ docker inspect socrates12345/object-detection-rest | grep IPAddress
 ```
 NOTE! ip address (REST-IPADDRESS) above will be used in the following steps. To test that the rest service has been deployed successfully;
