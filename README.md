@@ -18,16 +18,16 @@ to run locally;
 ## Rest and websocket model inference
 ```
 $ cd object-detection-rest
-$ s2i build . registry.access.redhat.com/ubi8/python-38 object-detection-rest:latest
-$ docker run --rm -i -p 8081:8081 -t —name object-detection-rest object-detection-rest:latest
-$ docker inspect object-detection-rest | grep IPAddress
+$ s2i build . registry.access.redhat.com/ubi8/python-38 socrates12345/object-detection-rest:latest
+$ docker run -p 8081:8081 --rm -it --name socrates12345/object-detection-rest socrates12345/object-detection-rest:latest
+$ docker inspect socrates12345/object-detection-rest | grep IPAddress
 ```
 NOTE! ip address (REST-IPADDRESS) above will be used in the following steps. To test that the rest service has been deployed successfully;
 ```
 $ curl -i -X POST -H "Content-Type: application/json" http://localhost:8081/predictions --data-binary "@sample-requests/twodogs.json"
 $cd ../object-detection-app
-$ s2i build . registry.access.redhat.com/ubi8/nodejs-14:latest object-detection-app:latest
-$ docker run --rm -i -p 8080:8080 -t --env OBJECT_DETECTION_URL=http://{REST_IPADDRESS}:8081/predictions object-detection-app:latest
+$ s2i build . registry.access.redhat.com/ubi8/nodejs-14:latest socrates12345/object-detection-app:latest
+$ docker run --rm -i -p 8080:8080 -t --env OBJECT_DETECTION_URL=http://{REST_IPADDRESS}:8081/predictions socrates12345/object-detection-app:latest
 ```
 Then to push to docker hub in order to use in kubesphere;
 ```
