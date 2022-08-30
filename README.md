@@ -108,11 +108,6 @@ then when all is up
 ```
 $ http://localhost:80/
 ```
-for the front end to be able to connect with the cluster will also need
-
-```
-$ kubectl port-forward controlcenter-0 9021:9021
-```
 ##### Lessons: 
 1. for connections you only need the bootstrap_server, consumer_topic, producer_topic
 2. always need api_version
@@ -171,11 +166,26 @@ $ chmod +x create-remote-kafka-kubesphere-cluster.sh
 then to check status of things run;
 
 ```
-$ kubectl logs -n kubesphere-system $(kubectl get pod --kubeconfig /Users/socrates/.kube/{nameofakscluster} -n kubesphere-system -l 'app in (ks-install, ks-installer)' -o jsonpath='{.items[0].metadata.name}') -f --kubeconfig /Users/socrates/.kube/{nameofakscluster}
-$ kubectl get svc/ks-console -n kubesphere-system
+kubectl logs -n kubesphere-system $(kubectl get pod --kubeconfig /Users/socrates/.kube/{nameofakscluster} -n kubesphere-system -l 'app in (ks-install, ks-installer)' -o jsonpath='{.items[0].metadata.name}') -f --kubeconfig /Users/socrates/.kube/{nameofakscluster}
+kubectl get svc/ks-console -n kubesphere-system
+kubectl edit svc/ks-console -n kubesphere-system --kubeconfig /Users/socrates/.kube/{nameofakscluster}
+kubectl logs -n kubesphere-system $(kubectl get pod --kubeconfig /Users/socrates/.kube/$1 -n kubesphere-system -l 'app in (ks-install, ks-installer)' -o jsonpath='{.items[0].metadata.name}') -f --kubeconfig /Users/socrates/.kube/{nameofakscluster}
+kubectl confluent status --kubeconfig /Users/socrates/.kube/{nameofakscluster}
+```
+once the cluster is up, run the edit command above to change Nodeport to LoadBalancer so that you can accessthe ks-console.
+
+
+for the front end to be able to connect with the confluence cluster will also need
 
 ```
-once the cluster is up, run ## Kafka Realtime consumption above
+$ kubectl port-forward controlcenter-0 9021:9021
+```
+then go to http://localhost:9021
+
+When everything is up then you can deploy the application to the cluster;
+```
+kubectl apply -f object-detection-deployment-kafka.yaml --kubeconfig /Users/socrates/.kube/{nameofakscluster}
+```
 
 ## MQTT integration
 

@@ -6,10 +6,10 @@ const fastify = require('fastify');
 const { PORT, IP, LOG_LEVEL } = require("./utils/constants");
 
 const app = fastify({
-   https: {
-     key: fs.readFileSync('key.pem'),
-     cert: fs.readFileSync('cert.pem')
-  },
+  // https: {
+  //   key: fs.readFileSync('key.pem'),
+  //   cert: fs.readFileSync('cert.pem')
+  //},
   logger: {
     level: LOG_LEVEL,
   },

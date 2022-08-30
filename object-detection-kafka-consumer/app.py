@@ -20,18 +20,21 @@ def main():
     # auto_offset_reset='latest' (Default)
     # This has the effect of starting from the last message.
 
+    print(f'Boot-strapping "{KAFKA_BOOTSTRAP_SERVER}" consuming topic "{KAFKA_CONSUMER_TOPIC}, producing messages on topic "{KAFKA_PRODUCER_TOPIC}"...')
     consumer = KafkaConsumer(
         KAFKA_CONSUMER_TOPIC,
         group_id=KAFKA_CONSUMER_GROUP,
         bootstrap_servers=KAFKA_BOOTSTRAP_SERVER,
         api_version=(0,10,2)
     )
+    print(f'started consumer "{KAFKA_BOOTSTRAP_SERVER}" consuming topic "{KAFKA_CONSUMER_TOPIC}, producing messages on topic "{KAFKA_PRODUCER_TOPIC}"...')
 
     producer = KafkaProducer(
 
-        bootstrap_servers=KAFKA_BOOTSTRAP_SERVER 
+        bootstrap_servers=KAFKA_BOOTSTRAP_SERVER
 
     )
+    print(f'started producer "{KAFKA_BOOTSTRAP_SERVER}" consuming topic "{KAFKA_CONSUMER_TOPIC}, producing messages on topic "{KAFKA_PRODUCER_TOPIC}"...')
 
     print(f'Subscribed to "{KAFKA_BOOTSTRAP_SERVER}" consuming topic "{KAFKA_CONSUMER_TOPIC}, producing messages on topic "{KAFKA_PRODUCER_TOPIC}"...')
 
