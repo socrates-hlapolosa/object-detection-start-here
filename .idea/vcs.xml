@@ -4,6 +4,8 @@
     <mapping directory="" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/object-detection-app" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/object-detection-kafka-consumer" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/object-detection-kafka-consumer/object-detection-kafka-consumer/object-detection-kafka-consumer" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/object-detection-kafka-consumer/object-detection-kafka-consumer/object-detection-kafka-consumer/object-detection-kafka-consumer/object-detection-kafka-consumer" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/object-detection-rest" vcs="Git" />
   </component>
 </project>
