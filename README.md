@@ -205,3 +205,38 @@ then run mosquito publisher
 mosquitto_pub -h 0.0.0.0 -p 1883 -t car/engine/temperature -q 2 -m "190F"
 ```
 log into the confluence console and go to topics, search for temperature and you should see the messages coming in
+
+# Enabling JupyterLab
+Note! Typically a datascientist would not be connected directly into the production kubenetes instance, but instead would have
+their own instance of kubernetes, that can connect to kafka, hence keeping it separate here to demonstrate the point
+
+
+## Steps
+
+1. Start jupyter docker container
+```
+docker run -it --rm -p 8888:8888 -e GRANT_SUDO=yes --user root jupyter/tensorflow-notebook
+```
+2. Copy source code to running container
+```
+docker ps
+```
+Find cid of tensor flow container
+```
+docker cp object-detection-kafka-consumer/ {cid}:/home/jovyan/
+```
+4. make kafka accessible to docker container through localhost machine
+
+```
+kubectl edit svc/kafka-0-internal
+```
+Change ClusterIP to LoadBalancer
+
+5. Add dns entry into docker container for kafka listner
+
+```
+docker exec -it {containerid of tensor flow} /bin/sh
+vi /etc/hosts
+```
+Insert line;
+10.0.0.106	kafka-0.kafka.confluent.svc.cluster.local
