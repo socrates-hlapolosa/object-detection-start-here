@@ -217,6 +217,11 @@ their own instance of kubernetes, that can connect to kafka, hence keeping it se
 ```
 docker run -it --rm -p 8888:8888 -e GRANT_SUDO=yes --user root jupyter/tensorflow-notebook
 ```
+Note! to login to the browser check login url on the terminal e.g: 
+
+```
+http://127.0.0.1:8888/lab?token=acacb83e58772977fb573bd4d8301da6cc4b9e395f9efdd5
+```
 2. Copy source code to running container
 ```
 docker ps
@@ -225,18 +230,19 @@ Find cid of tensor flow container
 ```
 docker cp object-detection-kafka-consumer/ {cid}:/home/jovyan/
 ```
-4. make kafka accessible to docker container through localhost machine
+3. Add dns entry into docker container for kafka listner
 
 ```
-kubectl edit svc/kafka-0-internal
-```
-Change ClusterIP to LoadBalancer
-
-5. Add dns entry into docker container for kafka listner
-
-```
-docker exec -it {containerid of tensor flow} /bin/sh
+docker exec -it {cid} /bin/sh
 vi /etc/hosts
 ```
 Insert line;
 10.0.0.106	kafka-0.kafka.confluent.svc.cluster.local
+
+4. make kafka accessible to docker container through localhost machine
+
+```
+kubectl edit svc/kafka-0-internal -n confluent
+```
+Change ClusterIP to LoadBalancer
+
